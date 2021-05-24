@@ -57,7 +57,8 @@ public class FileHandler {
 				if (numberofPizaa == 0) {
 					throw new Exception("None pizza number");
 				}
-
+				
+				int index = 0;
 				while (scan.hasNextLine()) {
 					line = scan.nextLine();
 					
@@ -75,9 +76,11 @@ public class FileHandler {
 					
 					pizza.setIngredient(ingredients);
 					
-					if(PizzaHandler.listPizza.isEmpty()) {
-						PizzaHandler.listPizza.add(pizza);
+					if(PizzaHandler.listPizza.isEmpty()) {	
 						pizza.incrase();
+						pizza.getPosition().add(index);
+						PizzaHandler.listPizza.add(pizza);
+						index = index + 1;
 						continue;
 					}
 					
@@ -87,13 +90,16 @@ public class FileHandler {
 						if( pizzaStored.equals(pizza) ) {
 							hadIt = true;
 							pizzaStored.incrase();
+							pizzaStored.getPosition().add(index);
 						}
 					}
 					
 					if(!hadIt) {
 						PizzaHandler.listPizza.add(pizza);
 						pizza.incrase();
+						pizza.getPosition().add(index);
 					}
+					index = index + 1;
 				}
 
 			} catch (FileNotFoundException e) {

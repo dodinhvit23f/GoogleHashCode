@@ -46,12 +46,18 @@ public class Pizza {
 	public void incrase() {
 		this.number = number + 1;
 	}
+	
+	public void decrase() {
+		this.number = number - 1;
+		this.RemovePosition();
+	}
 
 	public void AddPosition(int number) {
 		this.position.add(number);
+		
 	}
 
-	public void RemovePosition(int number) {
+	public void RemovePosition() {
 		if (this.position.isEmpty()) {
 			return;
 		}
