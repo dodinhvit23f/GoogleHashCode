@@ -57,11 +57,7 @@ public class Pizza {
 		
 	}
 
-	public void RemovePosition() {
-		if (this.position.isEmpty()) {
-			return;
-		}
-		
+	private void RemovePosition() {	
 		this.position.remove(0);
 	}
 
