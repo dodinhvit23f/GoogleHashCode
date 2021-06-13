@@ -18,10 +18,10 @@ public static int factorial(int n) {
 		Runtime runtime = Runtime.getRuntime();
 		
 		//String file_name = "./a_example";
-		String file_name = "./b_little_bit_of_everything";
+		//String file_name = "./b_little_bit_of_everything";
 		//String file_name = "./c_many_ingredients";
 		//String file_name = "./d_many_pizzas";
-		//String file_name = "./e_many_teams";
+		String file_name = "./e_many_teams";
 		
 		FileWriter fileReader;
 		try {

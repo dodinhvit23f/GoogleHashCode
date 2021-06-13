@@ -20,8 +20,6 @@ public class PizzaHandler {
 	public static int sroce = 0;
 	public static int totalTeam = 0;
 	public static int maxSize = 20;
-	public static long limmit = 0;
-	public static int numberOfTimeNotChoice = 0;
 	public static int numberOfImprove = 0;
 
 	public static float weight = 0.4f;
@@ -31,9 +29,6 @@ public class PizzaHandler {
 	public static Random rd = new Random();
 	// memory out
 	public static HashMap<String, Integer> mapPizzaMax = new HashMap<String, Integer>();
-	// public static List<Integer> listMax
-
-	// public static List<String> output = new ArrayList<String>();
 
 	/**
 	 * Đặt lại thông số: tổng số pizza, số pizza trung bình
@@ -55,27 +50,22 @@ public class PizzaHandler {
 		average = average / listPizza.size();
 
 	}
-	
-	public static long factorial(int start , int n) {
-		
-		if(n == 0) {
+
+	public static long factorial(int start, int n) {
+
+		if (n == 0) {
 			return 1;
 		}
-		
+
 		long results = 1;
-		
-		for (int i = start ; i <= n; i++) {
+
+		for (int i = start; i <= n; i++) {
 			results = results * i;
 		}
-		
-		
+
 		return results;
 	}
-	
-	public static void setLimmit(int k ,int n) {
-		
-		limmit = factorial(n - k, n) / factorial(1, k ) ;
-	}
+
 	/**
 	 * Quyết định xem bắt đầu từ 4 hay 3.
 	 */
@@ -139,12 +129,7 @@ public class PizzaHandler {
 
 			numberOfImprove = numberOfImprove + 1;
 
-			if (numberOfImprove < maxSize) {
-				continue;
-			}
-
-			if (mapPizzaMax.isEmpty()) {
-				numberOfTimeNotChoice = numberOfTimeNotChoice + 1;
+			if (numberOfImprove < 10) {
 				continue;
 			}
 
@@ -153,27 +138,19 @@ public class PizzaHandler {
 			choicePizzas(file_name, team);
 
 			amountOfPizza = amountOfPizza - team.getNumberOfPerson();
-			
-			
-			boolean changed = false;
-			
+
 			if (!listPizza.isEmpty()) {
 				for (int i = 0; i < listPizza.size();) {
 
 					if (listPizza.get(i).getNumber() == 0 && listPizza.get(i).getPosition().size() == 0) {
 						listPizza.remove(i);
-						changed = true;
+
 						continue;
 					}
 
 					i = i + 1;
 				}
 			}
-			
-			if(changed) {
-				setLimmit(team.getNumberOfPerson(),listPizza.size());
-			}
-			
 
 			mapPizzaMax.clear();
 			// System.out.println("Your current sroce is: " + sroce);
@@ -198,13 +175,13 @@ public class PizzaHandler {
 		ArrayList<String> keys = new ArrayList<String>(mapPizzaMax.keySet());
 		// lây toan bộ cac key
 		// tìm ra số nguyên liệu trùng nhỏ nhất và thêm vào danh sách
-		
+
 		String selectedKey = keys.get(0);
 
 		StringBuilder string = new StringBuilder();
 
 		String[] classNo = selectedKey.split(" ");
-		
+
 		string.append(String.format("%d ", classNo.length));
 
 		List<String> listIngredient = new ArrayList<String>();
@@ -213,8 +190,8 @@ public class PizzaHandler {
 				listIngredient.add(ingredient);
 			}
 		}
-		//System.out.println("");
-		threshold = totalDulicateIngredient(listIngredient, "defind lower theshold");
+		// System.out.println("");
+		threshold = totalDulicateIngredient(listIngredient);
 
 		for (int i = 0; i < classNo.length; i++) {
 			Pizza pizza = listPizza.get(Integer.parseInt(classNo[i]));
@@ -250,13 +227,19 @@ public class PizzaHandler {
 		 */
 		int position = 0;
 		int oldPosition = 0;
-		
+
 		List<String> listRandom = new ArrayList<String>();
-		
+
 		for (int i = 0; i < maxSize; i++) {
 			position = rd.nextInt(listPizza.size());
 			ArrayList<String> ingredients = new ArrayList<String>();
-			
+
+			if (position > 0 && position < listPizza.size() - 2) {
+				loopProcess(listPizza.size() - 1, position - 1, numberOfPerson - 1, "", ingredients, listRandom);
+				loopProcess(listPizza.size() - 1, position + 1, numberOfPerson + 1, "", ingredients, listRandom);
+
+			}
+
 			loopProcess(listPizza.size() - 1, position, numberOfPerson - 1, "", ingredients, listRandom);
 
 			oldPosition = position;
@@ -271,7 +254,8 @@ public class PizzaHandler {
 
 	}
 
-	public static void loopProcess(int lim, int start, int numberOfPerson, String code, List<String> ingredients, List<String> listRandom) {
+	public static void loopProcess(int lim, int start, int numberOfPerson, String code, List<String> ingredients,
+			List<String> listRandom) {
 
 		if (code.equals("")) {
 			code = code + String.valueOf(start);
@@ -280,6 +264,7 @@ public class PizzaHandler {
 		}
 
 		if (numberOfPerson == 0) {
+
 			int total = totalIngredient(ingredients);
 
 			if (mapPizzaMax.isEmpty()) {
@@ -288,18 +273,17 @@ public class PizzaHandler {
 
 				return;
 			}
-			
-			if(total == new ArrayList<Integer>( mapPizzaMax.values()).get(0) ) {
+
+			if (total <= new ArrayList<Integer>(mapPizzaMax.values()).get(0)) {
+
 				mapPizzaMax.put(code, total);
 			}
 
 			String[] classNoNew = code.split(" ");
-			
-			
+
 			for (String string : classNoNew) {
 				listRandom.add(string);
 			}
-			
 
 			for (int index = 0; index <= maxSize; index++) {
 
@@ -326,16 +310,16 @@ public class PizzaHandler {
 					}
 
 					for (String string : classNoOld) {
-						
+
 						boolean exist = false;
-						
+
 						for (String pizza : listRandom) {
 							if (pizza.equals(string)) {
 								exist = true;
 								break;
 							}
 						}
-						
+
 						if (!exist) {
 							listRandom.add(string);
 						}
@@ -347,25 +331,6 @@ public class PizzaHandler {
 					}
 				}
 			}
-
-			/*
-			 * for (Integer max : values) {
-			 * 
-			 * if (max <= total) { mapPizzaMax.clear();
-			 * 
-			 * 
-			 * 
-			 * mapPizzaMax.put(code, total); }
-			 * 
-			 * 
-			 * if (max < total) { mapPizzaMax.clear(); mapPizzaMax.put(code, total); }
-			 * 
-			 * if (max == total) {
-			 * 
-			 * mapPizzaMax.put(code, total); }
-			 * 
-			 * break; }
-			 */
 			return;
 		}
 
@@ -379,16 +344,23 @@ public class PizzaHandler {
 		String[] classNo = code.split(" ");
 
 		int i = rd.nextInt(listPizza.size());
-
+		
+		int loopTime = 1;
 		while (true) {
 			boolean exist = false;
-		
+
 			for (String s : classNo) {
 				if (String.valueOf(i).equals(s)) {
 					exist = true;
 					break;
 				}
 			}
+			
+			if(loopTime == 50) {
+				break;
+			}
+			
+			loopTime = loopTime + 1;
 
 			if (!exist) {
 				Pizza pizza = listPizza.get(i);
@@ -409,27 +381,6 @@ public class PizzaHandler {
 		for (String ingredinet : listPizza.get(i).getIngredient()) {
 			ingredients.add(ingredinet);
 		}
-		
-		/*
-		 * 
-		 * //long numberofIngerdient = totalDulicateIngredient(ingredients); long
-		 * numberofIngerdient = totalIngredient(ingredients);
-		 * 
-		 * if (numberOfTimeNotChoice == 3) { setParamter(); numberOfTimeNotChoice = 0; }
-		 * 
-		 * 
-		 * if (numberofIngerdient > (average + alpha)) { // long distance =
-		 * numberofDuplice - (minthreshold / step); average = (long) (average +
-		 * numberofIngerdient * (weight / 2)); // alpha = (long) (alpha +
-		 * (distance*0.1)); return; }
-		 * 
-		 * if (numberofIngerdient == average) { // long distance = numberofDuplice -
-		 * (minthreshold / step); average = (long) (average + numberofIngerdient *
-		 * weight); // alpha = (long) (alpha + (distance*0.1)); } else
-		 * 
-		 * if (numberofIngerdient < (average - alpha)) { average = (long) (average -
-		 * numberofIngerdient * (weight)); return; }
-		 */
 
 		loopProcess(lim, i, numberOfPerson - 1, code, ingredients, listRandom);
 	}
@@ -441,26 +392,23 @@ public class PizzaHandler {
 		String newCode = null;
 		// danh sách các nguyên liệu
 
-		
 		int lim = listRandom.size();
 		String[] classNoOld = key.split(" ");
 		List<String> ingredients = null;
-		
-		for (int index = 0; index < maxSize; index ++) {
-			
-			
-			
+
+		for (int index = 0; index < maxSize; index++) {
+
 			ingredients = new ArrayList<String>();
-			newCode = randomNewKey( number,  lim,  listRandom, ingredients);
-			
+			newCode = randomNewKey(number, lim, listRandom, ingredients);
+
 			int count = 0;
-			
+
 			for (int i = 0; i < classNoOld.length; i++) {
 				for (int j = 0; j < classNoNew.length; j++) {
 					if (classNoOld[i].equals(classNoNew[j])) {
 						count++;
 						break;
-					} 
+					}
 				}
 			}
 
@@ -469,13 +417,15 @@ public class PizzaHandler {
 			}
 
 		}
-		
-		int duplicate = totalDulicateIngredient(ingredients,"random");
+
+		int duplicate = totalDulicateIngredient(ingredients);
 		int total = totalIngredient(ingredients);
-		
+
 		// nếu tổng lớn hơn thì ....
 		if (value < total) {
+
 			mapPizzaMax.clear();
+
 			mapPizzaMax.put(newCode, total);
 			return true;
 		}
@@ -490,7 +440,7 @@ public class PizzaHandler {
 				}
 			}
 
-			int oldDuplicate = totalDulicateIngredient(oldIngredients,"previous duplicate");
+			int oldDuplicate = totalDulicateIngredient(oldIngredients);
 
 			if (oldDuplicate > duplicate) {
 
@@ -503,10 +453,10 @@ public class PizzaHandler {
 
 		return false;
 	}
-	
-	public  static String randomNewKey(int number, int lim, List<String> listRandom, List<String> ingredients) {
+
+	public static String randomNewKey(int number, int lim, List<String> listRandom, List<String> ingredients) {
 		String newCode = "";
-		
+
 		while (number != 0) {
 			// chọn pizaa ngẫu nhiên
 
@@ -529,7 +479,7 @@ public class PizzaHandler {
 
 			// thêm nguyên liệu vào danh sách
 			String[] array_ingredient = listPizza.get(Integer.parseInt(listRandom.get(index))).getIngredient();
-			
+
 			for (String ingredinet : array_ingredient) {
 				ingredients.add(ingredinet);
 			}
@@ -542,7 +492,7 @@ public class PizzaHandler {
 
 			number = number - 1;
 		}
-		
+
 		return newCode;
 	}
 
@@ -575,7 +525,7 @@ public class PizzaHandler {
 		return totalIngredient;
 	}
 
-	public static int totalDulicateIngredient(List<String> ingredients, String string) {
+	public static int totalDulicateIngredient(List<String> ingredients) {
 
 		int totalDuplicate = 0;
 
@@ -684,7 +634,7 @@ public class PizzaHandler {
 
 	public static void removeLargeDuplicate() {
 		List<String> keys = new ArrayList<String>(mapPizzaMax.keySet());
-		
+
 		int minThreshold = Integer.MAX_VALUE;
 		String lastkey = "";
 
@@ -698,25 +648,25 @@ public class PizzaHandler {
 					listIngredient.add(ingredient);
 				}
 			}
-			
-			//System.out.println("remove lagreDuplicate");
-			
-			int duplicate = totalDulicateIngredient(listIngredient, "remove");
 
-			if (minThreshold > duplicate) {	
-				
-				if(!lastkey.equals("")) {
+			// System.out.println("remove lagreDuplicate");
+
+			int duplicate = totalDulicateIngredient(listIngredient);
+
+			if (minThreshold > duplicate) {
+
+				if (!lastkey.equals("")) {
 					mapPizzaMax.remove(lastkey);
 				}
-				
+
 				minThreshold = duplicate;
 				lastkey = key;
-				
+
 				continue;
 			}
-				
+
 			mapPizzaMax.remove(key);
-			
+
 		}
 
 	}
